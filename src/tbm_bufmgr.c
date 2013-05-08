@@ -311,7 +311,7 @@ _user_data_delete (tbm_user_data *user_data)
 }
 
 static int
-_bo_lock (tbm_bo bo)
+_bo_lock (tbm_bo bo, int device, int opt)
 {
     tbm_bufmgr bufmgr = bo->bufmgr;
     int ret = 0;
@@ -319,8 +319,14 @@ _bo_lock (tbm_bo bo)
     if (bufmgr->backend->flags&TBM_LOCK_CTRL_BACKEND &&
         bufmgr->backend->bo_lock)
     {
-        /* use backend lock */
+        /* use bo_lock2 backend lock */
         ret = bufmgr->backend->bo_lock (bo);
+    }
+    if (bufmgr->backend->flags&TBM_LOCK_CTRL_BACKEND &&
+        bufmgr->backend->bo_lock2)
+    {
+        /* use bo_lock2 backend lock */
+        ret = bufmgr->backend->bo_lock2 (bo, device, opt);
     }
     else
     {
@@ -350,7 +356,7 @@ _bo_unlock (tbm_bo bo)
 }
 
 static int
-_tbm_bo_lock (tbm_bo bo)
+_tbm_bo_lock (tbm_bo bo, int device, int opt)
 {
     tbm_bufmgr bufmgr = NULL;
     int old;
@@ -375,7 +381,7 @@ _tbm_bo_lock (tbm_bo bo)
     {
         case LOCK_TRY_ALWAYS:    /* LOCK_TRY_ALWAYS */
             pthread_mutex_unlock (&bufmgr->lock);
-            ret = _bo_lock (bo);
+            ret = _bo_lock (bo, device, opt);
             pthread_mutex_lock (&bufmgr->lock);
             if(ret)
                 bo->lock_cnt++;
@@ -387,7 +393,7 @@ _tbm_bo_lock (tbm_bo bo)
             if (bo->lock_cnt == 0)
             {
                 pthread_mutex_unlock (&bufmgr->lock);
-                ret = _bo_lock (bo);
+                ret = _bo_lock (bo, device, opt);
                 pthread_mutex_lock (&bufmgr->lock);
                 if (ret)
                     bo->lock_cnt++;
@@ -1161,7 +1167,7 @@ tbm_bo_map (tbm_bo bo, int device, int opt)
 
     pthread_mutex_lock (&bufmgr->lock);
 
-    _tbm_bo_lock (bo);
+    _tbm_bo_lock (bo, device, opt);
     bo_handle = bufmgr->backend->bo_map (bo, device, opt);
 
     if (bufmgr->use_map_cache == 1 && bo->map_cnt == 0)
