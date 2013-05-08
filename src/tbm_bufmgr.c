@@ -1139,7 +1139,7 @@ tbm_bo_handle
 tbm_bo_map (tbm_bo bo, int device, int opt)
 {
     TBM_RETURN_VAL_IF_FAIL (TBM_BO_IS_VALID(bo), (tbm_bo_handle)0);
-TBM_LOG ("LOG LGO LG O\n");
+
     tbm_bufmgr bufmgr;
     tbm_bo_handle bo_handle;
 
