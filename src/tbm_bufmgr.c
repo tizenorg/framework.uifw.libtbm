@@ -121,9 +121,9 @@ static int bDebug = 0;
 
 #define MODULE_VERSION_NUMERIC(maj, min, patch) \
                ((((maj) & 0xFF) << 24) | (((min) & 0xFF) << 16) | (patch & 0xFFFF))
-#define GET_MODULE_MAJOR_VERSION(vers)	(((vers) >> 24) & 0xFF)
-#define GET_MODULE_MINOR_VERSION(vers)	(((vers) >> 16) & 0xFF)
-#define GET_MODULE_PATCHLEVEL(vers)	((vers) & 0xFFFF)
+#define GET_MODULE_MAJOR_VERSION(vers)    (((vers) >> 24) & 0xFF)
+#define GET_MODULE_MINOR_VERSION(vers)    (((vers) >> 16) & 0xFF)
+#define GET_MODULE_PATCHLEVEL(vers)    ((vers) & 0xFFFF)
 
 enum {
     LOCK_TRY_ONCE,
@@ -416,16 +416,30 @@ _tbm_bo_unlock (tbm_bo bo)
     RETURN_CHECK_FLAG (CTRL_BACKEND_VALID(bufmgr->backend->flags));
 
     old = bo->lock_cnt;
-    if (bo->lock_cnt > 0)
+    switch (bufmgr->lock_type)
     {
-        bo->lock_cnt--;
-        if (bo->lock_cnt == 0)
-           _bo_unlock (bo);
+        case LOCK_TRY_ALWAYS:    /* LOCK_TRY_ALWAYS */
+            if (bo->lock_cnt > 0)
+            {
+                bo->lock_cnt--;
+                _bo_unlock (bo);
+            }
+            break;
+        case LOCK_TRY_NEVER:    /* LOCK_TRY_NEVER */
+            return;
+            break;
+        default:
+            if (bo->lock_cnt > 0)
+            {
+                bo->lock_cnt--;
+                if (bo->lock_cnt == 0)
+                   _bo_unlock (bo);
+            }
+            break;
     }
-    else if (bo->lock_cnt < 0)
-    {
+
+    if (bo->lock_cnt < 0)
         bo->lock_cnt = 0;
-    }
 
     DBG_LOCK ("[libtbm:%d] << unlock bo:%p(%d, %d->%d)\n", getpid(),
              bo, bo->tgl_key, old, bo->lock_cnt);
