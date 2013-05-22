@@ -321,17 +321,17 @@ _bo_lock (tbm_bo bo, int device, int opt)
     tbm_bufmgr bufmgr = bo->bufmgr;
     int ret = 0;
 
-    if (TBM_CACHE_CTRL_BACKEND_VALID(bufmgr->backend->flags))
+    if (TBM_LOCK_CTRL_BACKEND_VALID(bufmgr->backend->flags))
     {
-        if (bufmgr->backend->bo_lock)
-        {
-            /* use bo_lock backend lock */
-            ret = bufmgr->backend->bo_lock (bo);
-        }
-        else if (bufmgr->backend->bo_lock2)
+        if (bufmgr->backend->bo_lock2)
         {
             /* use bo_lock2 backend lock */
             ret = bufmgr->backend->bo_lock2 (bo, device, opt);
+        }
+        else if (bufmgr->backend->bo_lock)
+        {
+            /* use bo_lock backend lock */
+            ret = bufmgr->backend->bo_lock (bo);
         }
         else
             TBM_LOG ("[libtbm:%d] "
@@ -352,7 +352,7 @@ _bo_unlock (tbm_bo bo)
 {
     tbm_bufmgr bufmgr = bo->bufmgr;
 
-    if (TBM_CACHE_CTRL_BACKEND_VALID(bufmgr->backend->flags))
+    if (TBM_LOCK_CTRL_BACKEND_VALID(bufmgr->backend->flags))
     {
         if (bufmgr->backend->bo_unlock)
         {
@@ -363,7 +363,7 @@ _bo_unlock (tbm_bo bo)
             TBM_LOG ("[libtbm:%d] "
                 "error %s:%d no backend unlock functions\n",
                 getpid(), __FUNCTION__, __LINE__);
-        }
+    }
     else
     {
         /* use tizen global unlock */
