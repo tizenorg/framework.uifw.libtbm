@@ -44,7 +44,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <errno.h>
 #include <pthread.h>
 #include "tbm_bufmgr.h"
-#include "tbm_bufmgr_glock.h"
+#include "tbm_bufmgr_tgl.h"
 #include "tbm_bufmgr_backend.h"
 #include "tbm_bufmgr_int.h"
 #include "list.h"
@@ -658,14 +658,19 @@ _tbm_bufmgr_init_state (tbm_bufmgr bufmgr)
 {
     RETURN_VAL_CHECK_FLAG (TBM_ALL_CTRL_BACKEND_VALID(bufmgr->backend->flags), 1);
 
-    bufmgr->lock_fd = open(tgl_devfile, O_RDWR);
+    bufmgr->lock_fd = open (tgl_devfile, O_RDWR);
 
     if(bufmgr->lock_fd < 0)
     {
-        TBM_LOG ("[libtbm:%d] "
-                "error: Fail to open global_lock:%s\n",
-                getpid(), tgl_devfile);
-        return 0;
+        bufmgr->lock_fd = open (tgl_devfile1, O_RDWR);
+        if(bufmgr->lock_fd < 0)
+        {
+
+            TBM_LOG ("[libtbm:%d] "
+                    "error: Fail to open global_lock:%s\n",
+                    getpid(), tgl_devfile);
+            return 0;
+        }
     }
 
    if (!_tgl_init(bufmgr->lock_fd, GLOBAL_KEY))
