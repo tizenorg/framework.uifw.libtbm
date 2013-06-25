@@ -51,7 +51,7 @@ typedef struct _tbm_bo *tbm_bo;
 /* TBM_OPTION */
 #define TBM_OPTION_READ      (1 << 0) /**< access option to read  */
 #define TBM_OPTION_WRITE     (1 << 1) /**< access option to write */
-#define TBM_OPTION_VENDOR    (0xffff00000) /**< vendor specific option: it depends on the backend */
+#define TBM_OPTION_VENDOR    (0xffff0000) /**< vendor specific option: it depends on the backend */
 
 /**
  * @brief tbm_bo_handle
