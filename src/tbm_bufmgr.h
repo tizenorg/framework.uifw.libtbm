@@ -75,7 +75,7 @@ enum TBM_BO_FLAGS
     TBM_BO_SCANOUT = (1<<0),       /**< scanout memory                                    */
     TBM_BO_NONCACHABLE = (1<<1),   /**< non-cachable memory                               */
     TBM_BO_WC = (1<<2),            /**< write-combine memory                              */
-    TBM_BO_VENDOR = (0xffff00000), /**< vendor specific memory: it depends on the backend */
+    TBM_BO_VENDOR = (0xffff0000), /**< vendor specific memory: it depends on the backend */
 };
 
 /* Functions for buffer manager */
