@@ -78,6 +78,10 @@ enum TBM_BO_FLAGS
     TBM_BO_VENDOR = (0xffff0000), /**< vendor specific memory: it depends on the backend */
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Functions for buffer manager */
 
 /**
@@ -216,6 +220,10 @@ int tbm_bo_set_user_data    (tbm_bo bo, unsigned long key, void* data);
  * @return 1 if this function succeeds, otherwise 0.
  */
 int tbm_bo_get_user_data    (tbm_bo bo, unsigned long key, void** data);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _TBM_BUFMGR_H_ */
 
