@@ -1,25 +1,31 @@
 Name:           libtbm
-Version:        1.0.9
-Release:        1
-VCS:            framework/uifw/libtbm#REBASE-31-gdb11679e1cc2e6d3c56bbfe621fc0820322cc2dc
+Version:        1.1.1
+Release:        4
 License:        MIT
-Summary:        the library for Tizen Buffer Manager
+Summary:        The library for Tizen Buffer Manager
 Group:          System/Libraries
 Source0:        %{name}-%{version}.tar.gz
 
 BuildRequires:  pkgconfig(pthread-stubs)
 BuildRequires:  pkgconfig(libdrm)
+BuildRequires:  pkgconfig(x11)
+BuildRequires:  pkgconfig(libdri2)
+BuildRequires:  pkgconfig(capi-base-common)
+BuildRequires:  pkgconfig(dlog)
 
 %description
 Description: %{summary}
 
 %package devel
-Summary:        the library for Tizen Buffer Manager
+Summary:        Tizen Buffer Manager Library - Development
 Group:          Development/Libraries
-Requires:       libdrm2
+Requires:       libtbm = %{version}
+Requires:       pkgconfig(capi-base-common)
 
 %description devel
-the library for Tizen Buffer Manager
+The library for Tizen Buffer Manager.
+
+Development Files.
 
 %prep
 %setup -q
@@ -44,6 +50,7 @@ rm -rf %{buildroot}
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
+
 %files
 %manifest libtbm.manifest
 %defattr(-,root,root,-)
@@ -55,7 +62,10 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 %dir %{_includedir}
 %{_includedir}/tbm_bufmgr.h
+%{_includedir}/tbm_surface.h
+%{_includedir}/tbm_surface_internal.h
 %{_includedir}/tbm_bufmgr_backend.h
+%{_includedir}/tbm_type.h
 %{_libdir}/libtbm.so
 %{_libdir}/libdrm_slp.so
 %{_libdir}/pkgconfig/libtbm.pc
