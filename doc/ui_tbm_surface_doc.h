@@ -1,6 +1,6 @@
 
-#ifndef __TIZEN_UI_TBM_SURFACE_DOC_H__
-#define __TIZEN_UI_TBM_SURFACE_DOC_H__
+#ifndef __SAMSUNG_UI_TBM_SURFACE_DOC_H__
+#define __SAMSUNG_UI_TBM_SURFACE_DOC_H__
 
 /**
  * @defgroup CAPI_UI_TBM_SURFACE_MODULE TBM Surface
@@ -21,5 +21,5 @@
  *  - Get the information of surface and planes.
  */
 
-#endif /* __TIZEN_UI_TBM_SURFACE_DOC_H__ */
+#endif /* __SAMSUNG_UI_TBM_SURFACE_DOC_H__ */
 

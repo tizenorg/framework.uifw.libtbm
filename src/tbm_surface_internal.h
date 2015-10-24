@@ -161,6 +161,18 @@ tbm_surface_h tbm_surface_internal_create_with_bos (tbm_surface_info_s *info, tb
 void tbm_surface_internal_destroy (tbm_surface_h surface);
 
 /**
+ * @brief reference the tbm surface
+    TODO:
+ */
+void tbm_surface_internal_ref (tbm_surface_h surface);
+
+/**
+ * @brief unreference the tbm surface
+    TODO:
+ */
+void tbm_surface_internal_unref (tbm_surface_h surface);
+
+/**
  * @brief Gets the number of buffer objects associated with the tbm_surface.
  * @since_tizen @if MOBILE 2.3 @elseif WEARABLE 2.3.1 @endif
  * @param[in] surface : the tbm_surface_h
@@ -301,6 +313,29 @@ int tbm_surface_internal_get_num_planes (tbm_format format);
    @endcode
  */
 int tbm_surface_internal_get_bpp (tbm_format format);
+
+/**
+ * @brief Gets bo index of plane.
+ * @since_tizen 2.4
+ * @param[in] surface : the tbm_surface_h
+ * @param[in] plane_idx : the bo index in the the tbm_surface
+ * @return bo index of plane, otherwise -1.
+ * @par Example
+   @code
+   #include <tbm_surface.h>
+   #include <tbm_surface_internal.h>
+
+   int bo_idx;
+   tbm_surface_h surface;
+
+   surface = tbm_surfacel_create (128, 128, TBM_FORMAT_YUV420);
+   bo_idx = tbm_surface_internal_get_plane_bo_idx (surface, 0);
+
+   ...
+
+   @endcode
+ */
+int tbm_surface_internal_get_plane_bo_idx (tbm_surface_h surface, int plane_idx);
 
 #ifdef __cplusplus
 }

@@ -125,6 +125,8 @@ struct _tbm_bufmgr_backend
 
     /**
     * @brief import the buffer object associated with the key.
+    * @remarks If the backend doesn't support a buffer sharing by tbm key,
+               fucntion pointer must be set to NULL.
     * @param[in] bo : the buffer object
     * @param[in] key : the key associated with the buffer object
     * @return pointer of the bo private.
@@ -133,6 +135,8 @@ struct _tbm_bufmgr_backend
 
     /**
     * @brief export the buffer object
+    * @remarks If the backend doesn't support a buffer sharing by tbm key,
+               fucntion pointer must be set to NULL.
     * @param[in] bo : the buffer object
     * @return key associated with the buffer object
     */
@@ -231,9 +235,55 @@ struct _tbm_bufmgr_backend
     * @param[out] size : the size of the plane
     * @param[out] offset : the offset of the plane
     * @param[out] pitch : the pitch of the plane
+    * @param[out] bo_idx : the bo index of the plane
     * @return 1 if this function succeeds, otherwise 0.
     */
-    int           (*surface_get_plane_data)   (tbm_surface_h surface, int width, int height, tbm_format format, int plane_idx, uint32_t *size, uint32_t *offset, uint32_t *pitch);
+    int           (*surface_get_plane_data)   (tbm_surface_h surface, int width, int height, tbm_format format, int plane_idx, uint32_t *size, uint32_t *offset, uint32_t *pitch, int *bo_idx);
+
+    /**
+    * @brief import the buffer object associated with the prime fd.
+    * @remarks tbm_fd must be free by user.
+    * @remarks If the backend doesn't support a buffer sharing by tbm fd,
+               fucntion pointer must be set to NULL.
+    * @param[in] bo : the buffer object
+    * @param[in] fd : the prime fd associated with the buffer object
+    * @return pointer of the bo private.
+    */
+    void *       (*bo_import_fd)         (tbm_bo bo, tbm_fd fd);
+
+    /**
+    * @brief export the buffer object
+    * @remarks tbm_fd must be free by user.
+    * @remarks If the backend doesn't support a buffer sharing by tbm fd,
+               fucntion pointer must be set to NULL.
+    * @param[in] bo : the buffer object
+    * @return tbm_fd associated with the buffer object
+    */
+    tbm_fd		(*bo_export_fd)         (tbm_bo bo);
+
+    /**
+    * @brief get the tbm_bo_handle according to the device type and the prime fd.
+    * @param[in] bufmgr : the tizen buffer manager
+    * @param[in] fd : the prime fd associated with the buffer object
+    * @param[in] device : the option to access the buffer object
+    * @return the handle of the buffer object
+    */
+    tbm_bo_handle   (*fd_to_handle)  (tbm_bufmgr bufmgr, tbm_fd fd, int device);
+
+    /**
+    * @brief get the num of bos with a format.
+    * @param[in] format : the format of the surface
+    * @return num of the bos if this function succeeds, otherwise 0.
+    */
+    int           (*surface_get_num_bos)   (tbm_format format);
+
+    /**
+    * @brief get the tbm flags of memory type
+    * @param[in] bo : the buffer object
+    * @see #TBM_BO_FLAGS
+    * @return tbm flags of memory type is this function succeeds, otherwise 0.
+    */
+    int           (*bo_get_flags)   (tbm_bo bo);
 
     /* Padding for future extension */
     void (*reserved1)    (void);
@@ -242,8 +292,6 @@ struct _tbm_bufmgr_backend
     void (*reserved4)    (void);
     void (*reserved5)    (void);
     void (*reserved6)    (void);
-    void (*reserved7)    (void);
-    void (*reserved8)    (void);
 };
 
 /**
@@ -276,6 +324,7 @@ void                tbm_backend_free  (tbm_bufmgr_backend backend);
 int                 tbm_backend_init  (tbm_bufmgr bufmgr, tbm_bufmgr_backend backend);
 
 void *tbm_backend_get_bufmgr_priv (tbm_bo bo);
+void *tbm_backend_get_priv_from_bufmgr (tbm_bufmgr bufmgr);
 void *tbm_backend_get_bo_priv     (tbm_bo bo);
 
 #endif  /* _TBM_BUFMGR_BACKEND_H_ */

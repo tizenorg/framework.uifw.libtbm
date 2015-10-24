@@ -49,22 +49,16 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <tbm_surface.h>
 #include <tbm_bufmgr_backend.h>
 
-#include </usr/include/dlog/dlog.h>
-#ifdef LOG_TAG
-#undef LOG_TAG
-#endif
-#define LOG_TAG "TBM"
-
 /* check condition */
 #define TBM_RETURN_IF_FAIL(cond) {\
     if (!(cond)) {\
-        TBM_DLOG ("[%s] : '%s' failed.\n", __FUNCTION__, #cond);\
+        TBM_LOG ("[%s] : '%s' failed.\n", __FUNCTION__, #cond);\
         return;\
     }\
 }
 #define TBM_RETURN_VAL_IF_FAIL(cond, val) {\
     if (!(cond)) {\
-        TBM_DLOG ("[%s] : '%s' failed.\n", __FUNCTION__, #cond);\
+        TBM_LOG ("[%s] : '%s' failed.\n", __FUNCTION__, #cond);\
         return val;\
     }\
 }
@@ -102,8 +96,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         (flags&TBM_LOCK_CTRL_BACKEND)
 
 #define TBM_LOG(...)  fprintf (stderr, __VA_ARGS__)
-#define TBM_DLOG(...)  LOGE (__VA_ARGS__)
-
 
 typedef union _tbm_bo_cache_state tbm_bo_cache_state;
 
@@ -148,6 +140,8 @@ struct _tbm_bo
     void *priv; /* bo private */
 
     struct list_head item_link; /* link of bo */
+
+    tbm_bo_handle default_handle; /*default handle */
 };
 
 /**
@@ -191,9 +185,26 @@ struct _tbm_surface {
     int flags;
 
     int num_bos;  /* the number of buffer objects */
-    tbm_bo bos[4];   /* the array of buffer objects */
+
+    tbm_bo bos[4];
+
+    int num_planes;  /* the number of buffer objects */
+
+    int planes_bo_idx[TBM_SURF_PLANE_MAX];
+
+    int refcnt;
 
     struct list_head item_link; /* link of surface */
 };
+
+int tbm_bufmgr_get_drm_fd_x11(void);
+int tbm_bufmgr_get_drm_fd_wayland(void);
+
+/* functions for mutex */
+int          tbm_surface_internal_get_info (tbm_surface_h surface, int opt, tbm_surface_info_s *info, int map);
+void         tbm_surface_internal_unmap (tbm_surface_h surface);
+unsigned int tbm_surface_internal_get_width (tbm_surface_h surface);
+unsigned int tbm_surface_internal_get_height (tbm_surface_h surface);
+tbm_format   tbm_surface_internal_get_format (tbm_surface_h surface);
 
 #endif  /* _TBM_BUFMGR_INT_H_ */

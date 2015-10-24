@@ -1,7 +1,8 @@
-SUBDIRS = .
+SUBDIRS =
 
 AM_CFLAGS = \
 	$(WARN_CFLAGS) \
+	-I./ \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/src \
 	$(PTHREADSTUBS_CFLAGS) \
@@ -12,7 +13,19 @@ libtbm_ladir = $(libdir)
 libtbm_la_LDFLAGS = -version-number 1:0:0 -no-undefined
 libtbm_la_LIBADD = @LIBTBM_LIBS@ @PTHREADSTUBS_LIBS@ @CLOCK_LIB@ -ldl
 
-libtbm_la_SOURCES = \
+libtbm_la_SOURCES =
+
+if HAVE_TBM_PLATFORM_X11
+    libtbm_la_SOURCES += \
+	    tbm_x11.c
+endif
+
+if HAVE_TBM_PLATFORM_WAYLAND
+    libtbm_la_SOURCES += \
+	    tbm_wayland.c
+endif
+
+libtbm_la_SOURCES += \
 	tbm_surface_internal.c \
 	tbm_surface.c \
 	tbm_bufmgr_backend.c \

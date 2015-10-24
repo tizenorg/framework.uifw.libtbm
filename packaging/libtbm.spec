@@ -1,17 +1,24 @@
+%bcond_with x
+%bcond_with wayland
+
 Name:           libtbm
-Version:        1.1.1
-Release:        5
+Version:        1.1.8
+Release:        1
 License:        MIT
 Summary:        The library for Tizen Buffer Manager
 Group:          System/Libraries
 Source0:        %{name}-%{version}.tar.gz
 
-BuildRequires:  pkgconfig(pthread-stubs)
 BuildRequires:  pkgconfig(libdrm)
+BuildRequires:  pkgconfig(pthread-stubs)
+%if %{with wayland}
+BuildRequires:  pkgconfig
+BuildRequires:  pkgconfig(wayland-client)
+%else
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(libdri2)
+%endif
 BuildRequires:  pkgconfig(capi-base-common)
-BuildRequires:  pkgconfig(dlog)
 
 %description
 Description: %{summary}
@@ -32,8 +39,13 @@ Development Files.
 
 %build
 
-%reconfigure --prefix=%{_prefix} \
+%if %{with wayland}
+%reconfigure --prefix=%{_prefix} --with-tbm-platform=WAYLAND \
             CFLAGS="${CFLAGS} -Wall -Werror" LDFLAGS="${LDFLAGS} -Wl,--hash-style=both -Wl,--as-needed"
+%else
+%reconfigure --prefix=%{_prefix} --with-tbm-platform=X11 \
+            CFLAGS="${CFLAGS} -Wall -Werror" LDFLAGS="${LDFLAGS} -Wl,--hash-style=both -Wl,--as-needed"
+%endif
 
 make %{?_smp_mflags}
 
@@ -56,7 +68,6 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 /usr/share/license/%{name}
 %{_libdir}/libtbm.so.*
-%{_libdir}/libdrm_slp.so.*
 
 %files devel
 %defattr(-,root,root,-)
@@ -67,6 +78,4 @@ rm -rf %{buildroot}
 %{_includedir}/tbm_bufmgr_backend.h
 %{_includedir}/tbm_type.h
 %{_libdir}/libtbm.so
-%{_libdir}/libdrm_slp.so
 %{_libdir}/pkgconfig/libtbm.pc
-
